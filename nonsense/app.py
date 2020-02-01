@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from math import fabs
 from nonsense import task
 from pytz import timezone
+from random import choice
 
 
 import hashlib
@@ -35,15 +36,14 @@ def nonsense_response():
         today = datetime.now(tz)
         delta = today - last_infraction
         task.upload_image.delay(channel_id, delta.days)
-
-        return generate_response(f"This office has been nonsense-free for {delta.days} days")
+        return generate_response(status_message(delta.days))
 
     if text == "report infraction":
         report_infraction(team_id, last_infraction)
-        return generate_response("Thank you for keeping tnis a no-nonsense office.")
+        return generate_response(report_message())
 
     report_infraction(team_id, last_infraction)
-    return generate_response(f"{text.capitalize()} is not in the supported-commands file. This incident will be reported.")
+    return generate_response(unknown_command_message(text))
 
 
 def get_current_record(team_id):
@@ -84,6 +84,48 @@ def verify_slack_request():
 
     slack_signature = request.headers['X-Slack-Signature']
     return hmac.compare_digest(my_signature, slack_signature)
+
+
+def status_message(days):
+    messages = [
+        "This office has been nonsense-free for {days} days",
+        "The office is on a nonsense-free streak of {days} days!",
+        "Only {days} days. This is ridiculous",
+        "Fun fact: Ecobee is on a nonsense-free streak of 368 days. This office is only on {days} days",
+        "{days} days. Let’s not get crazy and ruin our no-nonsense streak, all right? So, for instance, if you’re expecting a fax today, please don’t yell out, \"Michael J. Fax from Fax to the Future.\" Ok? That’s nonsense.",
+    ]
+
+    return choice(messages).format(days=days)
+
+
+def unknown_command_message(command):
+    messages = [
+        "'{command}' is not in the supported-commands file. This incident will be reported.",
+        "Exception in thread \"main\" java.lang.NoClassDefFoundError: {command}",
+        "NameError: name '{command}' is not defined",
+        "errors.New(\"{command} not found\")",
+        "Ahhhhhh! This command doesn't exist!",
+        "Some of the co-ops forgot to handle the '{command}' command. Thanks Anurag.",
+        "I couldn't find the '{command}' command. Here's a pleasant song to listen to while I search: https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "Your '{command}' command ain't here, kid.",
+        "This is not the command you're looking for.",
+        "Yeaaah what's happening? We went ahead and stopped supporting the '{command}' command, so if you could just go ahead and use the nonsense bot correctly, that would be great.",
+        "Failed to run the '{command}' command. '{command}' is not supported on this bot."
+    ]
+    return choice(messages).format(command=command)
+
+
+def report_message():
+    messages = [
+        "Thank you for keeping tnis a no-nonsense office.",
+        "Good call. Together we run a no-nonsense office.",
+        "That’s obviously nonsense. Nonsense. And what percentage of nonsense do we tolerate in this office? Right. Zero. No nonsense. You can't have nonsense.",
+        "Thank you for stamping out this enormous source of overlooked PFN.",
+        "A+ reporting!",
+        "Well played, old chap!",
+        "GG."
+    ]
+    return choice(messages)
 
 
 def generate_response(text):
