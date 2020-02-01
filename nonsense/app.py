@@ -12,8 +12,7 @@ app.config.from_pyfile("config.py")
 
 @app.route('/nonsense', methods=['POST'])
 def nonsense_response():
-    data = request.get_data()
-    print(data)
+    data = request.form
     text = data.get('text', '').lower().strip()
     channel_id = data.get('channel_id')
     print(data, text, channel_id)
