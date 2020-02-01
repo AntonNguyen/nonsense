@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from io import BytesIO
 from nonsense.nonsense import Nonsense
 
+import hmac
 import os
 import re
 import slack
@@ -12,6 +13,9 @@ app.config.from_pyfile("config.py")
 
 @app.route('/nonsense', methods=['POST'])
 def nonsense_response():
+    if not verify_slack_request():
+        return jsonify({}), 403
+
     data = request.form
     text = data.get('text', '').lower().strip()
     channel_id = data.get('channel_id')
@@ -35,6 +39,26 @@ def nonsense_response():
     return generate_response("I don't quite understand what you're trying to say")
 
 
+def verify_slack_request():
+    slack_signing_secret = app.config.get("SLACK_SIGNING_SECRET")
+    request_body = request.body()
+    timestamp = request.headers['X-Slack-Request-Timestamp']
+
+    if absolute_value(time.time() - timestamp) > 60 * 5:
+        # The request timestamp is more than five minutes from local time.
+        # It could be a replay attack, so let's ignore it.
+        return False
+
+    sig_basestring = f"v0:{timestamp}:{request_body}"
+    my_signature = 'v0=' + hmac.compute_hash_sha256(
+        slack_signing_secret,
+        sig_basestring
+    ).hexdigest()
+
+    slack_signature = request.headers['X-Slack-Signature']
+    if not hmac.compare(my_signature, slack_signature):
+        return False
+    return True
 
 
 def generate_response(text):
