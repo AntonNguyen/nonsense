@@ -9,6 +9,12 @@ app = Flask(__name__)
 app.config.from_pyfile("config.py")
 
 
+@app.route('/nonsense', methods=['POST'])
+def nonsense_response():
+    print(request.json)
+    return jsonify({})
+
+
 @app.route("/")
 def slack_response():
     days = 10
