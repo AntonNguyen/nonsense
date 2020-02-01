@@ -44,7 +44,7 @@ def nonsense_response():
 
 def verify_slack_request():
     slack_signing_secret = app.config.get("SLACK_SIGNING_SECRET")
-    request_body = request.get_data().decode("utf-8")
+    request_body = request.get_data()
     timestamp = request.headers['X-Slack-Request-Timestamp']
 
     if fabs(time.time() - float(timestamp)) > 60 * 5:
