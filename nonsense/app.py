@@ -39,6 +39,7 @@ def nonsense_response():
 
 def generate_response(text):
     return jsonify({
+        "response_type": "in_channel",
         "blocks": [
             {
                 "type": "section",
