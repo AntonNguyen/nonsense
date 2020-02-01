@@ -12,10 +12,10 @@ app.config.from_pyfile("config.py")
 
 @app.route('/nonsense', methods=['POST'])
 def nonsense_response():
-    print(request.data)
-
-    text = request.args.get('text', '').lower().strip()
-    channel_id = request.args.get('channel_id')
+    data = request.get_data()
+    text = data.get('text', '').lower().strip()
+    channel_id = data.get('channel_id')
+    print(data, text, channel_id)
 
     days = re.compile('^(\d+)$', re.IGNORECASE)
     days_match = days.match(text)
