@@ -26,6 +26,7 @@ def nonsense_response():
     text = data.get('text', '').lower().strip()
     team_id = data.get('team_id')
     channel_id = data.get('channel_id')
+    print(f"Request received from team '{team_id}' in channel '{channel_id}'")
 
     last_infraction = get_current_record(team_id)
 
