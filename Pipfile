@@ -10,8 +10,8 @@ pillow = "*"
 slackclient = "*"
 flask = "*"
 gunicorn = "*"
-redis = "*"
-celery = "*"
+celery = "==4.3.0"
+redis = "==3.3.11"
 
 [requires]
 python_version = "3.7"
