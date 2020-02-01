@@ -9,7 +9,7 @@ class Nonsense:
         self.image_path = os.path.join(path, 'nonsense.jpg')
 
 
-    def create_image(self, days=0):
+    def track_days(self, days=0):
         if days < 0:
             raise NonenseException("Negative nonsense days is nonsense")
 
@@ -33,7 +33,7 @@ class Nonsense:
             ImageOps.colorize(wrapper, (0,0,0), 'rgb(111, 109, 125)'),
             self._get_text_coordinates(days),
             wrapper)
-        original.save("nonsense_1.jpg")
+        return original.copy()
 
     def _scale_font(self, days):
         length = len(days)
