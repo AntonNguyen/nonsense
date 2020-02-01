@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from io import BytesIO
-from nonsense.nonsense import Nonsense
+from nonsense.nonsense import Nonsense, NonenseException
 from math import fabs
 
 import hashlib
@@ -22,7 +22,6 @@ def nonsense_response():
     data = request.form
     text = data.get('text', '').lower().strip()
     channel_id = data.get('channel_id')
-    print(data, text, channel_id)
 
     days = re.compile('^(\d+)$', re.IGNORECASE)
     days_match = days.match(text)
@@ -33,7 +32,7 @@ def nonsense_response():
     days_pattern = re.compile('^(\d+) days$', re.IGNORECASE)
     days_match = days_pattern.match(text)
     if days_match:
-        days = days_match.group(1)
+        days = int(days_match.group(1))
         return upload_image(channel_id, days, f"Updating nonsense counter to {days} days.")
 
     if text == "help":
@@ -59,7 +58,6 @@ def verify_slack_request():
     ).hexdigest()
 
     slack_signature = request.headers['X-Slack-Signature']
-    print(my_signature, slack_signature)
     return hmac.compare_digest(my_signature, slack_signature)
 
 
@@ -78,17 +76,20 @@ def generate_response(text):
     })
 
 def upload_image(channel_id, days, message):
-    nonsense = Nonsense()
-    image = nonsense.track_days(days)
-    io_stream = BytesIO()
-    image.save(io_stream, "JPEG")
-    io_stream.seek(0)
+    try:
+        nonsense = Nonsense()
+        image = nonsense.track_days(days)
+        io_stream = BytesIO()
+        image.save(io_stream, "JPEG")
+        io_stream.seek(0)
 
-    client = slack.WebClient(token=app.config.get("SLACK_TOKEN"))
+        client = slack.WebClient(token=app.config.get("SLACK_TOKEN"))
 
-    response = client.files_upload(
-        file=io_stream.read(),
-        initial_comment=message,
-        channels=channel_id
-    )
-    return jsonify({})
+        response = client.files_upload(
+            file=io_stream.read(),
+            initial_comment=message,
+            channels=channel_id
+        )
+        return jsonify({})
+    except NonenseException as e:
+        return generate_response(str(e))
