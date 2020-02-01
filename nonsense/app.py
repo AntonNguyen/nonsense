@@ -28,7 +28,7 @@ def nonsense_response():
         task.upload_image.delay(channel_id, 0)
         return generate_response(f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.")
 
-    days_pattern = re.compile('^(\d+) days$', re.IGNORECASE)
+    days_pattern = re.compile('^(\d+) days?$', re.IGNORECASE)
     days_match = days_pattern.match(text)
     if days_match:
         days = int(days_match.group(1))
