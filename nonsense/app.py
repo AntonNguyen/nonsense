@@ -52,8 +52,8 @@ def get_current_record(team_id):
 
         redisClient.set(team_id, today.isoformat())
         return today
-
-    return datetime.fromisoformat(redisClient.get(team_id))
+    current_record = redisClient.get(team_id)
+    return datetime.fromisoformat(current_record.decode('utf-8'))
 
 
 def report_infraction(team_id, last_infraction):
