@@ -28,16 +28,16 @@ def nonsense_response():
     days_match = days.match(text)
     if days_match:
         days = days_match.group(1)
-        return generate_response(f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.")
+        return upload_image(channel_id, 0, f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.")
 
     days_pattern = re.compile('^(\d+) days$', re.IGNORECASE)
     days_match = days_pattern.match(text)
     if days_match:
         days = days_match.group(1)
-        return generate_response(f"Updating nonsense counter to {days} days.")
+        return upload_image(channel_id, days, f"Updating nonsense counter to {days} days.")
 
     if text == "help":
-        return generate_response("It nonsense that you need help. Resetting nonsense counter to 0 days.")
+        return upload_image(channel_id, 0, "Have you not been paying attention? Resetting nonsense counter to 0 days.")
 
     return generate_response("I don't quite understand what you're trying to say")
 
@@ -76,9 +76,8 @@ def generate_response(text):
             }
         ]
     })
-@app.route("/")
-def slack_response():
-    days = 10
+
+def upload_image(channel_id, days, message):
     nonsense = Nonsense()
     image = nonsense.track_days(days)
     io_stream = BytesIO()
@@ -89,7 +88,7 @@ def slack_response():
 
     response = client.files_upload(
         file=io_stream.read(),
-        initial_comment=f'{days} days since our last nonsense',
-        channels='#anandh4prez'
+        initial_comment=message,
+        channels=channel_id
     )
-    return jsonify({"response": "hello world!"})
+    return jsonify({})
