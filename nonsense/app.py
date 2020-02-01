@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
-from io import BytesIO
-from nonsense.nonsense import Nonsense, NonenseException
 from math import fabs
+from nonsense import task
 
 import hashlib
 import hmac
@@ -27,16 +26,19 @@ def nonsense_response():
     days_match = days.match(text)
     if days_match:
         days = days_match.group(1)
-        return upload_image(channel_id, 0, f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.")
+        task.upload_image.delay(channel_id, 0, f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.", app.config.get("SLACK_TOKEN"))
+        return jsonify({})
 
     days_pattern = re.compile('^(\d+) days$', re.IGNORECASE)
     days_match = days_pattern.match(text)
     if days_match:
         days = int(days_match.group(1))
-        return upload_image(channel_id, days, f"Updating nonsense counter to {days} days.")
+        task.upload_image.delay(channel_id, days, f"Updating nonsense counter to {days} days.", app.config.get("SLACK_TOKEN"))
+        return jsonify({})
 
     if text == "help":
-        return upload_image(channel_id, 0, "Have you not been paying attention? Resetting nonsense counter to 0 days.")
+        task.upload_image.delay(channel_id, 0, "Have you not been paying attention? Resetting nonsense counter to 0 days.", app.config.get("SLACK_TOKEN"))
+        return jsonify({})
 
     return generate_response("I don't quite understand what you're trying to say")
 
@@ -75,21 +77,4 @@ def generate_response(text):
         ]
     })
 
-def upload_image(channel_id, days, message):
-    try:
-        nonsense = Nonsense()
-        image = nonsense.track_days(days)
-        io_stream = BytesIO()
-        image.save(io_stream, "JPEG")
-        io_stream.seek(0)
 
-        client = slack.WebClient(token=app.config.get("SLACK_TOKEN"))
-
-        response = client.files_upload(
-            file=io_stream.read(),
-            initial_comment=message,
-            channels=channel_id
-        )
-        return jsonify({})
-    except NonenseException as e:
-        return generate_response(str(e))
