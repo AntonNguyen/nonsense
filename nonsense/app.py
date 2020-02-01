@@ -1,15 +1,20 @@
+from datetime import datetime
 from flask import Flask, request, jsonify
 from math import fabs
 from nonsense import task
+from pytz import timezone
+
 
 import hashlib
 import hmac
 import os
 import re
+import redis
 import time
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
+redisClient = redis.from_url(os.getenv('REDIS_URL'), db=1)
 
 
 @app.route('/nonsense', methods=['POST'])
@@ -19,27 +24,45 @@ def nonsense_response():
 
     data = request.form
     text = data.get('text', '').lower().strip()
+    team_id = data.get('team_id')
     channel_id = data.get('channel_id')
 
-    days = re.compile('^(\d+)$', re.IGNORECASE)
-    days_match = days.match(text)
-    if days_match:
-        days = days_match.group(1)
-        task.upload_image.delay(channel_id, 0)
-        return generate_response(f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.")
+    last_infraction = get_current_record(team_id)
 
-    days_pattern = re.compile('^(\d+) days?$', re.IGNORECASE)
-    days_match = days_pattern.match(text)
-    if days_match:
-        days = int(days_match.group(1))
-        task.upload_image.delay(channel_id, days)
-        return generate_response(f"Updating nonsense counter to {days} days.")
+    if text == "status":
+        tz = timezone('EST')
+        today = datetime.now(tz)
+        delta = today - last_infraction
+        task.upload_image.delay(channel_id, delta.days)
 
-    if text == "help":
-        task.upload_image.delay(channel_id, 0)
-        return generate_response("Have you not been paying attention? Resetting nonsense counter to 0 days.")
+        return generate_response(f"This office has been nonsense-free for {delta.days} days")
 
-    return generate_response("I don't quite understand what you're trying to say")
+    if text == "report infraction":
+        report_infraction(team_id, last_infraction)
+        return generate_response("Thank you for keeping tnis a no-nonsense office.")
+
+    report_infraction(team_id, last_infraction)
+    return generate_response(f"{text.capitalize()} is not in the supported-commands file. This incident will be reported.")
+
+
+def get_current_record(team_id):
+    if not redisClient.exists(team_id):
+        tz = timezone('EST')
+        today = datetime.now(tz)
+
+        redisClient.set(team_id, today.isoformat())
+        return today
+
+    return datetime.fromisoformat(redisClient.get(team_id))
+
+
+def report_infraction(team_id, last_infraction):
+    tz = timezone('EST')
+    today = datetime.now(tz)
+    if today.date() == last_infraction.date():
+        return
+
+    redisClient.set(team_id, today.isoformat())
 
 
 def verify_slack_request():
