@@ -3,6 +3,7 @@ from io import BytesIO
 from nonsense.nonsense import Nonsense
 from math import fabs
 
+import hashlib
 import hmac
 import os
 import re
@@ -52,9 +53,10 @@ def verify_slack_request():
         return False
 
     sig_basestring = f"v0:{timestamp}:{request_body}"
-    my_signature = 'v0=' + hmac.compute_hash_sha256(
+    my_signature = 'v0=' + hmac.new(
         slack_signing_secret,
-        sig_basestring
+        sig_basestring,
+        hashlib.sha256
     ).hexdigest()
 
     slack_signature = request.headers['X-Slack-Signature']
