@@ -13,6 +13,7 @@ app.config.from_pyfile("config.py")
 @app.route('/nonsense', methods=['POST'])
 def nonsense_response():
     data = request.get_data()
+    print(data)
     text = data.get('text', '').lower().strip()
     channel_id = data.get('channel_id')
     print(data, text, channel_id)
@@ -21,59 +22,34 @@ def nonsense_response():
     days_match = days.match(text)
     if days_match:
         days = days_match.group(1)
-        return jsonify({
-            "blocks": [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days."
-                    }
-                }
-            ]
-        })
+        return generate_response(f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.")
 
     days_pattern = re.compile('^(\d+) days$', re.IGNORECASE)
     days_match = days_pattern.match(text)
     if days_match:
         days = days_match.group(1)
-        return jsonify({
-            "blocks": [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": f"Updating nonsense counter to {days} days."
-                    }
-                }
-            ]
-        })
+        return generate_response(f"Updating nonsense counter to {days} days.")
 
     if text == "help":
-        return jsonify({
-            "blocks": [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": f"It nonsense that you need help. Resetting nonsense counter to 0 days."
-                    }
-                }
-            ]
-        })
+        return generate_response("It nonsense that you need help. Resetting nonsense counter to 0 days.")
 
+    return generate_response("I don't quite understand what you're trying to say")
+
+
+
+
+def generate_response(text):
     return jsonify({
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"I don't quite understand what you're trying to say"
+                    "text": text
                 }
             }
         ]
     })
-
 @app.route("/")
 def slack_response():
     days = 10
