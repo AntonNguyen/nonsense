@@ -6,7 +6,6 @@ import hashlib
 import hmac
 import os
 import re
-import slack
 import time
 
 app = Flask(__name__)
@@ -26,19 +25,19 @@ def nonsense_response():
     days_match = days.match(text)
     if days_match:
         days = days_match.group(1)
-        task.upload_image.delay(channel_id, 0, f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.", app.config.get("SLACK_TOKEN"))
-        return jsonify({})
+        task.upload_image.delay(channel_id, 0)
+        return generate_response(f"{days} what? Cats? Dogs? This is nonsense. Resetting counter to 0 days.")
 
     days_pattern = re.compile('^(\d+) days$', re.IGNORECASE)
     days_match = days_pattern.match(text)
     if days_match:
         days = int(days_match.group(1))
-        task.upload_image.delay(channel_id, days, f"Updating nonsense counter to {days} days.", app.config.get("SLACK_TOKEN"))
-        return jsonify({})
+        task.upload_image.delay(channel_id, days)
+        return generate_response(f"Updating nonsense counter to {days} days.")
 
     if text == "help":
-        task.upload_image.delay(channel_id, 0, "Have you not been paying attention? Resetting nonsense counter to 0 days.", app.config.get("SLACK_TOKEN"))
-        return jsonify({})
+        task.upload_image.delay(channel_id, 0)
+        return generate_response("Have you not been paying attention? Resetting nonsense counter to 0 days.")
 
     return generate_response("I don't quite understand what you're trying to say")
 

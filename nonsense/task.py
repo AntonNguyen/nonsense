@@ -3,14 +3,17 @@ from nonsense.nonsense import Nonsense, NonenseException
 
 import celery
 import os
+import slack
 
-app = celery.Celery('slack-nonsense')
+app = celery.Celery(__name__)
 app.conf.update(BROKER_URL=os.environ['REDIS_URL'],
                 CELERY_RESULT_BACKEND=os.environ['REDIS_URL'])
 
+SLACK_TOKEN = os.getenv("SLACK_TOKEN")
+
 @app.task
-def upload_image(channel_id, days, message, token):
-    client = slack.WebClient(token=token)
+def upload_image(channel_id, days):
+    client = slack.WebClient(token=SLACK_TOKEN)
     try:
         nonsense = Nonsense()
         image = nonsense.track_days(days)
@@ -20,7 +23,6 @@ def upload_image(channel_id, days, message, token):
 
         response = client.files_upload(
             file=io_stream.read(),
-            initial_comment=message,
             channels=channel_id
         )
         print(response)
