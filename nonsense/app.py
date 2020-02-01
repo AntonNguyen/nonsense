@@ -10,8 +10,10 @@ app = Flask(__name__)
 app.config.from_pyfile("config.py")
 
 
-@app.route('/nonsense')
+@app.route('/nonsense', methods=['POST'])
 def nonsense_response():
+    print(request.data)
+
     text = request.args.get('text', '').lower().strip()
     channel_id = request.args.get('channel_id')
 
