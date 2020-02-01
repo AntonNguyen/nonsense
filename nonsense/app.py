@@ -46,7 +46,7 @@ def verify_slack_request():
     request_body = request.get_data().decode("utf-8")
     timestamp = request.headers['X-Slack-Request-Timestamp']
 
-    if fabs(time.time() - timestamp) > 60 * 5:
+    if fabs(time.time() - float(timestamp)) > 60 * 5:
         # The request timestamp is more than five minutes from local time.
         # It could be a replay attack, so let's ignore it.
         return False
