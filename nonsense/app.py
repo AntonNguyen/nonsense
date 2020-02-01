@@ -43,8 +43,7 @@ def nonsense_response():
 
 
 def verify_slack_request():
-    slack_signing_secret = app.config.get("SLACK_SIGNING_SECRET")
-    request_body = request.get_data()
+    slack_signing_secret = bytes(app.config.get("SLACK_SIGNING_SECRET"), 'utf-8')
     timestamp = request.headers['X-Slack-Request-Timestamp']
 
     if fabs(time.time() - float(timestamp)) > 60 * 5:
@@ -52,7 +51,7 @@ def verify_slack_request():
         # It could be a replay attack, so let's ignore it.
         return False
 
-    sig_basestring = f"v0:{timestamp}:{request_body}"
+    sig_basestring = bytes('v0:' + str(timestamp) + ':', 'utf-8') + request.get_data()
     my_signature = 'v0=' + hmac.new(
         slack_signing_secret,
         sig_basestring,
@@ -60,9 +59,8 @@ def verify_slack_request():
     ).hexdigest()
 
     slack_signature = request.headers['X-Slack-Signature']
-    if not hmac.compare(my_signature, slack_signature):
-        return False
-    return True
+    print(my_signature, slack_signature)
+    return hmac.compare_digest(my_signature, slack_signature)
 
 
 def generate_response(text):
