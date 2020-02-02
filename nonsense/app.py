@@ -1,17 +1,19 @@
 from flask import Flask, request, jsonify
 from math import fabs
 from nonsense import task
-from pytz import timezone
 from random import choice
 
 import hashlib
 import hmac
-import os
-import re
 import time
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
+
+VALID_COMMANDS = [
+    "status",
+    "report infraction"
+]
 
 
 @app.route('/nonsense', methods=['POST'])
@@ -28,18 +30,19 @@ def nonsense_response():
     print(f"Request received from team '{team_id}' in channel '{channel_id}' from user '{user_id}")
     task.handle_request.delay(team_id, channel_id, user_id, text)
 
-    return jsonify({
-    "response_type": "in_channel",
-    "blocks": [
-        {
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": acknowledgement_message()
-            }
-        }
-    ]
-})
+    if text in VALID_COMMANDS:
+        return jsonify({
+            "response_type": "in_channel",
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": acknowledgement_message()
+                    }
+                }
+            ]
+        })
 
 
 def verify_slack_request():
