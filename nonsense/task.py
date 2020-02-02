@@ -124,6 +124,18 @@ def report_message():
         "Thank you for stamping out this enormous source of overlooked PFN.",
         "A+ reporting!",
         "Well played, old chap!",
-        "GG."
+        "GG.",
+        "Affirmative",
+        "OK boomer",
+        "Roger, roger",
+        "Okay.",
+        "Okee day! Disa happenings.",
+        "ACK",
+        "Roger that.",
+        "As you wish.",
+        "Right on!",
+        "Uh-huh",
+        "Gladly",
+        "Absolutely I do",
     ]
     return choice(messages)

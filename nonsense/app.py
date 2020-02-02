@@ -10,11 +10,6 @@ import time
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
 
-VALID_COMMANDS = [
-    "status",
-    "report infraction"
-]
-
 
 @app.route('/nonsense', methods=['POST'])
 def nonsense_response():
@@ -30,21 +25,9 @@ def nonsense_response():
     print(f"Request received from team '{team_id}' in channel '{channel_id}' from user '{user_id}")
     task.handle_request.delay(team_id, channel_id, user_id, text)
 
-    if text in VALID_COMMANDS:
-        return jsonify({
-            "response_type": "in_channel",
-            "blocks": [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": acknowledgement_message()
-                    }
-                }
-            ]
-        })
-
-    return jsonify()
+    return jsonify({
+        "response_type": "in_channel"
+    })
 
 
 def verify_slack_request():
@@ -65,22 +48,3 @@ def verify_slack_request():
 
     slack_signature = request.headers['X-Slack-Signature']
     return hmac.compare_digest(my_signature, slack_signature)
-
-
-def acknowledgement_message():
-    messages = [
-        "Affirmative",
-        "OK boomer",
-        "Roger, roger",
-        "Okay.",
-        "Okee day! Disa happenings.",
-        "ACK",
-        "Roger that.",
-        "As you wish.",
-        "Right on!",
-        "Uh-huh",
-        "Gladly",
-        "Absolutely I do",
-    ]
-
-    return choice(messages)
