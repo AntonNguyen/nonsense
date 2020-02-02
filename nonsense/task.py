@@ -71,7 +71,7 @@ def post_message(channel_id, text):
     client = slack.WebClient(token=SLACK_TOKEN)
     response = client.chat_postMessage(
         text=text,
-        channels=channel_id
+        channel=channel_id
     )
     print(response)
 

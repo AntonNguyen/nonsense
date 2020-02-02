@@ -44,6 +44,8 @@ def nonsense_response():
             ]
         })
 
+    return jsonify()
+
 
 def verify_slack_request():
     slack_signing_secret = bytes(app.config.get("SLACK_SIGNING_SECRET"), 'utf-8')
