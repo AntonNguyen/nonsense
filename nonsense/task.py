@@ -112,6 +112,7 @@ def status_message(days):
         "Your code looks as though you have been playing bingo with anti-patterns.",
         "More unit tests? No! What your code needs is petrol and a match.",
         "I would ask you your age, but I don't want my stack to overflow",
+        "And now, a word from our sponsor for @troup: https://v.cameo.com/1WTlnO7hU4",
     ]
 
     return choice(messages).format(days=days)
