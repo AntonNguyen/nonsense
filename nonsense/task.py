@@ -90,53 +90,36 @@ def get_current_record(team_id):
 
 def status_message(days):
     messages = [
-        "This office has been nonsense-free for {days} days",
-        "The office is on a nonsense-free streak of {days} days!",
-        "Only {days} days. This is ridiculous",
-        "Fun fact: Ecobee is on a nonsense-free streak of 368 days. This office is only on {days} days",
-        "{days} days. Let’s not get crazy and ruin our no-nonsense streak, all right? So, for instance, if you’re expecting a fax today, please don’t yell out, \"Michael J. Fax from Fax to the Future.\" Ok? That’s nonsense.",
+        "Welcome to the Purge. For 24 hours, any nonsense has been sanctioned until midnight, when the Purge concludes. Blessed be the great Leafy and FreshBooksj, a company reborn. May nonsense be with you all.",
+        "Support our Troups and be nonsensical.",
+        "The nonsense-counter has overfl0wed. It's now a free-for-all.",
+        "Brave souls who are WFO - please take this opporunity to waste a precious resource of toilet paper to cover Troup's desk in celebration of the nonsense-purge",
+        "I guess the Leafs don't have any need for a playoff beard.",
+        "The titantic amd the Leafs both look good - until they hit the ice.",
+        "After a detailed analysis, I have concluded that Troup's age is increasing linearly.",
+        "Don't forget to have a ball today. https://freshbooks.slack.com/files/U02M4M44K/FFLCAFXFT/20120426090404-64cabef9-me.jpg",
+        "Please practise social isolation: https://freshbooks.slack.com/files/U02M4M44K/FFNGKUEJV/dee.jpg",
+        "I don't have a witty message. I just wanted to share this picture of young @Anandh Sridharan: https://freshbooks.slack.com/files/U02M4M44K/FFP1ST0HZ/dsc04185.jpg",
+        "Here is some nonsense inspiration: https://freshbooks.slack.com/files/U02M4M44K/FFQHKMBPG/troup.png",
+        "Ok boomer",
+        "Why, you stuck up, half-witted, scruffy-looking… Nerf herder!",
+        "By the time you've rhymed one line, I've already busted ten; You rap in exponential time and I'm big-O of log(n)",
+        "Your code runs so slow your data brings sleeping bags to camp-out in the cache lines.",
+        "I never believed in chaos theory until I saw your variable naming convention!",
+        "Your code is so bad your child processes disowned you.",
+        "By popular demand, your code backup is in /dev/null/",
+        "Your code is so bad, Richard Stallman suggested that you keep it proprietary.",
+        "Your code looks as though you have been playing bingo with anti-patterns.",
+        "More unit tests? No! What your code needs is petrol and a match.",
+        "I would ask you your age, but I don't want my stack to overflow",
     ]
 
     return choice(messages).format(days=days)
 
 
 def unknown_command_message(command):
-    messages = [
-        "'{command}' is not in the supported-commands file. This incident will be reported.",
-        "Exception in thread \"main\" java.lang.NoClassDefFoundError: {command}",
-        "NameError: name '{command}' is not defined",
-        "errors.New(\"{command} not found\")",
-        "Ahhhhhh! This command doesn't exist!",
-        "Some of the co-ops forgot to handle the '{command}' command. Thanks Anurag.",
-        "I couldn't find the '{command}' command. Here's a pleasant song to listen to while I search: https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "Your '{command}' command ain't here, kid.",
-        "This is not the command you're looking for.",
-        "Yeaaah what's happening? We went ahead and stopped supporting the '{command}' command, so if you could just go ahead and use the nonsense bot correctly, that would be great.",
-        "Failed to run the '{command}' command. '{command}' is not supported on this bot."
-    ]
-    return choice(messages).format(command=command)
+    return "Welcome to the Purge. For 24 hours, any nonsense has been sanctioned until midnight, when the Purge concludes. Blessed be the great Leafy and FreshBooksj, a company reborn. May nonsense be with you all."
 
 
 def report_message():
-    messages = [
-        "Thank you for keeping tnis a no-nonsense office.",
-        "Good call. Together we run a no-nonsense office.",
-        "That’s obviously nonsense. Nonsense. And what percentage of nonsense do we tolerate in this office? Right. Zero. No nonsense. You can't have nonsense.",
-        "Thank you for stamping out this enormous source of overlooked PFN.",
-        "A+ reporting!",
-        "Well played, old chap!",
-        "GG.",
-        "Affirmative",
-        "OK boomer",
-        "Roger, roger",
-        "Okay.",
-        "Okee day! Disa happenings.",
-        "ACK",
-        "Roger that.",
-        "As you wish.",
-        "Right on!",
-        "Uh-huh",
-        "Gladly",
-        "Absolutely I do",
-    ]
-    return choice(messages)
+    return "Welcome to the Purge. For 24 hours, any nonsense has been sanctioned until midnight, when the Purge concludes. Blessed be the great Leafy and FreshBooksj, a company reborn. May nonsense be with you all."
