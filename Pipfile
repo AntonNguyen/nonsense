@@ -10,7 +10,7 @@ pillow = "*"
 slackclient = "*"
 flask = "*"
 gunicorn = "*"
-celery = "==4.3.0"
+celery = "==5.2.2"
 redis = "==3.3.11"
 
 [requires]
